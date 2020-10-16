@@ -1,152 +1,176 @@
-//You can edit ALL of the code here
 function setup() {
 	const allEpisodes = getAllEpisodes();
-	createInitialDiv();
-	makePageForEpisodes(allEpisodes);
-
-	selectTheEpisodeFromList();
+	selectShowsFromMenu();
+	makePageForShows();
 	searchTheEpisodes();
+	selectTheEpisodeFromList();
 }
-
-// This function is to create a 'container' (div) and a 'row' (div) and append them to 'rootElem'.
-function createInitialDiv() {
-	const rootElem = document.getElementById("root");
-	const containerName = document.createElement("div");
-	containerName.className = "container";
-	const divRow = document.createElement("div");
-	divRow.className = "row";
-	rootElem.appendChild(containerName);
-	containerName.appendChild(divRow);
-}
-// This function contains all episodes to be displayed on screen when window.onload.
+//This function is to fetch shows and episodes from an API
+let rootElem = document.querySelector("#root");
+const fetchDataFromAPI = (id) => {
+	fetch(`https://api.tvmaze.com/shows/${id}/episodes`)
+		.then((resp) => resp.json())
+		.then((data) => makePageForEpisodes(data))
+		.catch((error) => console.log(`Error ${error}`));
+};
+/*****************************************************************************&&&**************/
+//Function to display all episodes of a show
 function makePageForEpisodes(episodeList) {
-	const rootElem = document.getElementById("root");
-	const containerName = document.querySelector(".container");
-	const divRow = document.querySelector(".row");
-
+	function zeroPadded(episodeCode) {
+		return episodeCode.toString().padStart(2, "0");
+	}
+	const rowDiv = document.querySelector("#rowCard");
+	rowDiv.innerHTML = "";
+	const selectEpisode = document.querySelector("#selectEpisode");
+	selectEpisode.innerHTML = "";
+	const optionalElem = document.createElement("option");
+	optionalElem.innerText = "All episodes";
+	selectEpisode.appendChild(optionalElem);
 	episodeList.forEach((episode) => {
-		const divCard = document.createElement("div");
-		divCard.className = "card col-3";
-		const divCardHeader = document.createElement("div");
-		divCardHeader.className = "card-header";
-		const episodeName = document.createElement("h5");
-		episodeName.className = "card-title";
-		episodeName.innerText = `${
-			episode.name
-		} - S${episode.season
-			.toString()
-			.padStart(2, "0")}E${episode.number.toString().padStart(2, "0")}`;
+		const optionalElem = document.createElement("option");
+		optionalElem.innerText = `S${zeroPadded(episode.season)}E${zeroPadded(
+			episode.number
+		)} - ${episode.name}`;
+		optionalElem.value = `S${zeroPadded(episode.season)}E${zeroPadded(
+			episode.number
+		)}`;
+		selectEpisode.appendChild(optionalElem);
+		const cardDiv = document.createElement("div");
+		cardDiv.className = "col-3 card";
+		cardDiv.id = `S${zeroPadded(episode.season)}E${zeroPadded(episode.number)}`;
+		const cardDivTitle = document.createElement("div");
+		cardDivTitle.className = "cardTitle";
+		const episodeName = document.createElement("h6");
+		episodeName.className = "cardHeader";
+		episodeName.innerText = `${episode.name} - ${cardDiv.id}`;
 		const episodeImage = document.createElement("img");
-		episodeImage.className = "card-img-top";
-		episodeImage.src = episode.image.medium;
-		const cardPElement = document.createElement("p");
-		cardPElement.className = "card-text";
-		cardPElement.innerHTML = episode.summary;
-		const cardFooter = document.createElement("div");
-		cardFooter.className = "card-footer";
-		const cardFooterLink = document.createElement("a");
-		cardFooterLink.className = "card-link";
-		cardFooterLink.innerHTML = "The data has(originally) come from TVMaze.com";
-		cardFooterLink.href = "https://www.tvmaze.com/";
-		cardFooterLink.target = "_blank";
-		divRow.appendChild(divCard);
-		divCard.appendChild(divCardHeader);
-		divCardHeader.appendChild(episodeName);
-		divCard.appendChild(episodeImage);
-		divCard.appendChild(cardPElement);
-		divCard.appendChild(cardFooter);
-		cardFooter.appendChild(cardFooterLink);
+		episodeName.className = "cardImage";
+		if (episode.img !== null) {
+			episodeImage.src = episode.image.medium;
+		}
+		const episodeSummary = document.createElement("p");
+		episodeSummary.className = "cardText";
+		episodeSummary.innerHTML = episode.summary;
+		cardDiv.appendChild(episodeName);
+		cardDiv.appendChild(episodeImage);
+		cardDiv.appendChild(episodeSummary);
+		rowDiv.appendChild(cardDiv);
 	});
 }
-
-// This function creates a search bar to look for input value that matches with the values in the 'card title' or 'card summary'.
+/***********************************************************************************************/
+//Function to search for shows and episodes
 function searchTheEpisodes() {
-	const rootElem = document.getElementById("root");
-	const allEpisodes = getAllEpisodes();
-	const searchNavBar = document.createElement("nav");
-	searchNavBar.className = "navbar navbar-light";
-	const searchFormElement = document.createElement("form");
-	searchFormElement.className = "form-inline";
-	const inputElement = document.createElement("input");
-	inputElement.className = "form-control mr-sm-2";
-	inputElement.setAttribute("type", "search");
-	inputElement.setAttribute("placeholder", "Search...");
-	inputElement.setAttribute("aria-label", "Search");
-	const inputSpanElement = document.createElement("span");
-	inputSpanElement.textContent =
-		"Display how many episodes match the current search";
-
-	rootElem.prepend(searchNavBar);
-	searchNavBar.appendChild(searchFormElement);
-	searchFormElement.appendChild(inputElement);
-	searchFormElement.appendChild(inputSpanElement);
-
-	function inputSelect(e) {
-		const addedInput = e.target.value.toLowerCase();
-		const cardList = document.querySelectorAll(".card");
-
-		let list = Array.from(cardList);
-		list.forEach(function (card) {
-			if (card.innerText.toLowerCase().indexOf(addedInput) !== -1) {
+	const searchInputElem = document.querySelector("#searchInput");
+	const inputResult = document.querySelector(".searchContent");
+	const searchEp = (name) => {
+		console.log(name);
+		const inputText = name.target.value.toLowerCase();
+		const listCards = document.querySelectorAll(".card");
+		const list = Array.from(listCards);
+		list.forEach((card) => {
+			if (card.innerText.toLowerCase().indexOf(inputText) !== -1) {
 				card.style.display = "block";
 			} else {
 				card.style.display = "none";
 			}
 		});
 		let newList = list.filter((item) => item.style.display === "block");
-		inputSpanElement.textContent = `Search result: ${newList.length}/73 episodes match the current search`;
-	}
-	inputElement.addEventListener("input", inputSelect);
+		inputResult.textContent = `${newList.length} episodes/shows match your search`;
+	};
+	searchInputElem.addEventListener("input", searchEp);
 }
-// This function creates a selection bar to select episode and shows that episode only in the window.
+/***********************************************************************************************/
+//Function to select Episodes and shows
 function selectTheEpisodeFromList() {
-	const allEpisodes = getAllEpisodes();
-	const rootElem = document.getElementById("root");
-	const searchNavBar = document.createElement("nav");
-	const divRow = document.querySelector(".row");
-	const inputGroup = document.createElement("div");
-	inputGroup.className = "input-group";
-	const spanInputGroup = document.createElement("span");
-	spanInputGroup.className = "list-input";
-	spanInputGroup.textContent = "Select the episode from the list!";
-	const selectElement = document.createElement("select");
-	selectElement.className = "custom-select";
-	selectElement.setAttribute("id", "inputGroupSelect04");
-	selectElement.setAttribute("aria-label", "Example select with button addon");
-	rootElem.prepend(inputGroup);
-	inputGroup.appendChild(selectElement);
-	inputGroup.appendChild(spanInputGroup);
-
-	allEpisodes.forEach((episode) => {
-		const optionElement = document.createElement("option");
-		optionElement.innerText = `S${episode.season
-			.toString()
-			.padStart(2, "0")}E${episode.number.toString().padStart(2, "0")} - ${
-			episode.name
-		}`;
-		selectElement.appendChild(optionElement);
-	});
-
-	selectElement.addEventListener("change", selectFromMenu);
-
-	function selectFromMenu(event) {
-		if (event.target.value === "none") {
-			divRow.innerHTML = "";
-			makePageForEpisodes(allEpisodes);
-		} else {
-			const selectedEpisode = allEpisodes.filter((episode) => {
-				return (
-					`S${episode.season
-						.toString()
-						.padStart(2, "0")}E${episode.number
-						.toString()
-						.padStart(2, "0")} - ${episode.name}` === selectElement.value
-				);
-			});
-			divRow.innerHTML = "";
-			makePageForEpisodes(selectedEpisode);
+	const selectEpisode = document.querySelector("#selectShow");
+	const selectFromMenu = (event) => {
+		const listCard = document.querySelector(".card");
+		listCard.forEach((episode) => {
+			if (event.value.target === "All episodes") {
+				episode.style.display = "block";
+			} else {
+				episode.id === event.target.value
+					? (episode.style.display = "block")
+					: (episode.style.display = "none");
+			}
+		});
+	};
+	selectEpisode.addEventListener("change", selectFromMenu);
+}
+/*************************************************************************************************/
+function selectShowsFromMenu() {
+	const allShows = getAllShows();
+	const sortedShows = allShows.sort((a, b) => {
+		if (a.name.toLocaleLowerCase() < b.name.toLocaleLowerCase()) {
+			return -1;
 		}
-		selectElement.value = "";
-	}
+		if (a.name.toLocaleLowerCase() > b.name.toLocaleLowerCase()) {
+			return 1;
+		}
+		return 0;
+	});
+	const selectShow = document.querySelector("#selectShow");
+	sortedShows.forEach((show) => {
+		const showOptions = document.createElement("option");
+		showOptions.value = show.id;
+		showOptions.innerText = show.name;
+		selectShow.appendChild(showOptions);
+	});
+	selectShow.addEventListener("change", (event) => {
+		const showContents = document.querySelector("#showResult");
+		if (event.target.value === "") {
+			showContents.style.display = "flex";
+		} else {
+			fetchDataFromAPI(event.target.value);
+			showContents.style.display = "none";
+		}
+	});
+}
+/*************-----------&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&-----------*************/
+function makePageForShows() {
+	const allShows = getAllShows();
+	const showContents = document.querySelector("#searchContainer");
+	const showCardRow = document.querySelector("#showResult");
+	allShows.forEach((show) => {
+		const showCardCol = document.createElement("div");
+		showCardCol.className = "col-3 card";
+		showCardCol.style.margin = "2.5rem";
+
+		showCardCol.id = "showCard";
+		const showTitle = document.createElement("h5");
+		showTitle.className = "cardTitle";
+		showTitle.innerText = show.name;
+		const showImageCover = document.createElement("img");
+		showImageCover.className = "cardImage";
+		showImageCover.alt = `This is the image cover for the show ${show.name}.`;
+		if (show.image !== null) {
+			showImageCover.src = show.image.medium;
+		}
+		const showSummary = document.createElement("p");
+		showSummary.className = "showText";
+		showSummary.innerHTML = show.summary;
+		const showDetails = document.createElement("div");
+		const showDetailsList = document.createElement("ul");
+		showDetailsList.style.listStyleType = "none";
+		const showDetailsListItem1 = document.createElement("li");
+		showDetailsListItem1.innerHTML = `Genres: ${show.genres}`;
+		const showDetailsListItem2 = document.createElement("li");
+		showDetailsListItem2.innerHTML = `Status: ${show.status}`;
+		const showDetailsListItem3 = document.createElement("li");
+		showDetailsListItem3.innerHTML = `Ratings: ${show.rating.average}`;
+		const showDetailsListItem4 = document.createElement("li");
+		showDetailsListItem4.innerHTML = `Run Time: ${show.runtime}`;
+		showDetailsList.appendChild(showDetailsListItem1);
+		showDetailsList.appendChild(showDetailsListItem2);
+		showDetailsList.appendChild(showDetailsListItem3);
+		showDetailsList.appendChild(showDetailsListItem4);
+		showDetails.appendChild(showDetailsList);
+		showCardCol.appendChild(showTitle);
+		showCardCol.appendChild(showImageCover);
+		showCardCol.appendChild(showSummary);
+		showCardCol.appendChild(showDetails);
+		showCardRow.appendChild(showCardCol);
+		showContents.appendChild(showCardRow);
+	});
 }
 window.onload = setup;

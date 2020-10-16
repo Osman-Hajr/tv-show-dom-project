@@ -3,7 +3,13 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>TV Show Project | Osman Hajr (https://github.com/Osman-Hajr)</title>
+		<title>TV Show Project</title>
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+			integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z"
+			crossorigin="anonymous"
+		/>
 		<link
 			rel="stylesheet"
 			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
@@ -13,12 +19,61 @@
 		<link href="style.css" rel="stylesheet" />
 		<link rel="icon" href="/favicon.ico" type="image/x-icon" />
 	</head>
+
 	<body>
-		<div id="root"></div>
+		<header id="header">
+			<h1>TV Shows Navigator</h1>
+		</header>
+
+		<div id="root">
+			<div class="row" id="rowSearch">
+				<div class="customSelect col">
+					<label
+						>List of Shows:
+						<select id="selectShow" name="shows list">
+							<option value="text">Select Show</option>
+						</select>
+					</label>
+				</div>
+				<div class="col customSelect">
+					<span class="searchContent">Search Shows/Episodes</span>
+					<input
+						type="text"
+						id="searchInput"
+						title="search input"
+						placeholder="Search Here ..."
+					/>
+				</div>
+				<div class="col customSelect">
+					<label
+						>Select an Episode:
+						<select id="selectEpisode" name="episodes list">
+							<option value="text">Select Episode</option>
+						</select>
+					</label>
+				</div>
+			</div>
+			<div class="container" id="searchContainer">
+				<div class="row" id="showResult"></div>
+			</div>
+			<div class="container" id="cardContainer">
+				<div class="row" id="rowCard"></div>
+			</div>
+			<footer id="footer">
+				<p>
+					The data on this page were originally taken from
+					<a href="https://www.tvmaze.com/">TVMaze.com </a>
+				</p>
+			</footer>
+		</div>
 
 		<!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
+
 		<script src="episodes.js"></script>
+
 		<!-- Loads YOUR javascript code -->
+
 		<script src="script.js"></script>
+		<script src="shows.js"></script>
 	</body>
 </html>

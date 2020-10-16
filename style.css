@@ -1,32 +1,16 @@
-#root {
-	color: rgb(20, 20, 20);
-	background-color: #e1e3e6;
+body {
+	background-color: #f0f0f0;
 }
-
-.row {
+#header {
+	text-align: center;
+	background-color: rgb(240, 3, 169);
+	color: #fff;
+}
+/* #rowSearch {
 	display: flex;
-	justify-content: center;
-}
-nav {
-	background-color: #db8dc1;
-}
-.card {
-	margin: 10px;
-}
-.card-header {
-	width: 100%;
-	margin-bottom: 10px;
-}
-.card-footer {
-	width: 100%;
-}
-.input-group {
+	flex-direction: row;
+} */
+/* .customSelect {
 	display: flex;
-	width: 100%;
-	margin-bottom: 30px;
-	background-color: #db8dc1;
-}
-.list-input {
-	margin-left: 3%;
-	margin-right: 40%;
-}
+	flex-direction: row;
+} */
