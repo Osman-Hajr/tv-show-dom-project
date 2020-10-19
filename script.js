@@ -84,7 +84,7 @@ function searchTheEpisodes() {
 function selectTheEpisodeFromList() {
 	const selectEpisode = document.querySelector("#selectEpisode");
 	selectEpisode.addEventListener("change", selectFromMenu);
-	const selectFromMenu = (event) => {
+	function selectFromMenu (event) {
 		const listCard = document.querySelector(".card");
 		console.log(listCard);
 		listCard.forEach((episode) => {
