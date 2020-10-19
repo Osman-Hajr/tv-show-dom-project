@@ -86,8 +86,10 @@ function selectTheEpisodeFromList() {
 	selectEpisode.addEventListener("change", selectFromMenu);
 	const selectFromMenu = (event) => {
 		const listCard = document.querySelector(".card");
+		console.log(listCard);
 		listCard.forEach((episode) => {
 			if (event.value.target === "All episodes") {
+				console.log(All episodes);
 				episode.style.display = "block";
 			} else {
 				episode.id === event.target.value
