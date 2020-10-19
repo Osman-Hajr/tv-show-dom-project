@@ -83,10 +83,11 @@ function searchTheEpisodes() {
 //Function to select Episodes and shows
 function selectTheEpisodeFromList() {
 	const selectEpisode = document.querySelector("#selectShow");
+	selectEpisode.addEventListener("change", selectFromMenu);
 	const selectFromMenu = (event) => {
 		const listCard = document.querySelector(".card");
 		listCard.forEach((episode) => {
-			if (event.value.target === "Allepisodes") {
+			if (event.value.target === "All episodes") {
 				episode.style.display = "block";
 			} else {
 				episode.id === event.target.value
@@ -95,7 +96,7 @@ function selectTheEpisodeFromList() {
 			}
 		});
 	};
-	selectEpisode.addEventListener("change", selectFromMenu);
+	
 }
 /*************************************************************************************************/
 function selectShowsFromMenu() {
